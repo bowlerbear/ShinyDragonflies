@@ -24,7 +24,6 @@ ui <- tagList(
                fluidRow(
                  
                  column(width = 3,
-                        
                         # iDiv logo
                         img(src = paste(img_dir, "iDivLogo-short.jpg", sep="/"), height=36.61875, width=108),
                         br(), br(), 
@@ -33,20 +32,13 @@ ui <- tagList(
                         selectInput(inputId = "species",
                                     label = "Choose a species to display",
                                     choices = species_names,
-                                    selected = "Aeshna affinis"),
-                        
-                        
-                        # display trend classification
-                        h5(textOutput(outputId = "trend")), 
-                        # just to balance out the longer height on the right side
-                        # h5(" ", style='display: inline'), #textOutput(), 
-                        # br(),br(),
+                                    selected = "Aeshna affinis")
                         ),
                  
-                 column(width = 3,
+                 column(width = 3, align="center",
                         # dragon fly silhouette
-                        br(), br(), 
-                        img(src = paste(img_dir, "dragonfly_silhouette.jpg", sep="/"), height=134.765625, width=220.5484375),
+                        # br(), br(), 
+                        img(src = paste(img_dir, "dragonfly_silhouette_rotated.jpg", sep="/"), height=134.765625, width=220.5484375)
                         ),
                  
                  column(width = 6,
@@ -58,9 +50,8 @@ ui <- tagList(
                                     animate = animationOptions(interval = 300,
                                                                playButton = icon('play', "fa-lg"),
                                                                pauseButton = icon('pause', "fa-lg"))
-                                    ),
-                        ),
-                 
+                                    )
+                        )
                  ),
                
                # line break
@@ -70,10 +61,17 @@ ui <- tagList(
                fluidRow(
                  
                  column(width = 6,
+                        # display trend classification
+                        h5(textOutput(outputId = "trend")), 
+                        # h5(" ", style='display: inline'), #textOutput(), 
+                        
+                        # display German red list classification
+                        h5(textOutput(outputId = "red_list")), 
+                        # h5(" ", style='display: inline'), #textOutput(), 
+                        
                         # time series plot
                         #h5('Time Series'),
-                        br(), br(),
-                        #br(), br(), br(), 
+                        br(), 
                         plotOutput(outputId = "ts_plot")
                         # img(src = paste(ts_plots_dir, "Aeshna affinis_ts.png", sep="/"), height=400, width=500)
                         ),
@@ -87,24 +85,23 @@ ui <- tagList(
                           tabPanel(
                             # map
                             title = "Estimate",
-                            plotOutput(outputId = "estimate_map", height=545.455, width=500)
+                            plotOutput(outputId = "estimate_map") 
                             # img(src = paste(estimate_maps_dir, "Map_1990_Aeshna affinis.png", sep="/"), height=562.5, width=515.625)
-                            
-                          ),
+                            ),
                           
                           tabPanel(
                             # map
                             title = "Error",
-                            plotOutput(outputId = "error_map", height=545.455, width=500)
+                            plotOutput(outputId = "error_map")
                             ),
                           
                           tabPanel(
                             # map
                             title = "Data",
-                            plotOutput(outputId = "data_map", height=545.455, width=500)
-                          )
+                            plotOutput(outputId = "data_map")
+                            )
                           
-                          ),
+                          )
                         )
                  ),
                
@@ -133,22 +130,22 @@ ui <- tagList(
                                     choices = c("EN", "DE"),
                                     selected = "EN",
                                     width = "40%"
-                        )
+                                    )
                         ),
                  
-                 column(4,
+                 column(4, align="center",
                         # dragonfly_silhouette
-                        img(src = paste(img_dir, "dragonfly_silhouette.jpg", sep="/"), height=134.765625, width=220.5484375
+                        img(src = paste(img_dir, "dragonfly_silhouette_rotated.jpg", sep="/"), height=134.765625, width=220.5484375
                             # height=86.25, width=141.151
-                            ),
+                            )
                         ),
                  
                  
                  column(5,
                         # sMon logo
-                        img(src = paste(img_dir, "sMon Logo_transparent.png", sep="/"), height=90.46638, width=321.84),
+                        img(src = paste(img_dir, "sMon Logo_transparent.png", sep="/"), height=90.46638, width=321.84)
                         # br(), br()
-                        ),
+                        )
                  
                  ),
                
@@ -192,33 +189,46 @@ ui <- tagList(
 
 
 
+
 server <- function(input, output) {
+  # plots
   output$ts_plot <- renderImage({
     filename <- normalizePath(file.path(ts_plots_dir, paste(input$species, '.png', sep='_ts')))
     list(src = filename,
-         width = 500,
-         height = 400)
+         width = 475,
+         height = 380)  # height=400, width=500
     }, deleteFile = FALSE)
   
   output$estimate_map <- renderImage({
     filename <- normalizePath(file.path(estimate_maps_dir, paste0("Map_", input$year, "_", input$species, '.png')))
     list(src = filename,
-         width = 500,
-         height = 545.455)
+         width = 421.6659,
+         height = 460)  # height=400, width=366.666  #height=545.455, width=500
     }, deleteFile = FALSE)
   
   output$error_map <- renderImage({
     filename <- normalizePath(file.path(error_maps_dir, paste0("Map_error_", input$year, "_", input$species, '.png')))
     list(src = filename,
-         width = 500,
-         height = 545.455)
+         width = 421.6659,
+         height = 460)
   }, deleteFile = FALSE)
   
+  
+  # trends info
   output$trend <- renderText({
-    paste("Trend classification:", 
+    paste("Trend classification: ",
           (Datafile_1_Traits_and_trends %>% filter(Species == input$species))$trend_classification)
     })
   
+  output$red_list <- renderText({
+    paste("German Red List classification (2015): ", 
+          (Datafile_1_Traits_and_trends %>% filter(Species == input$species))$GermanRedList, " (",
+          (Datafile_1_Traits_and_trends %>% filter(Species == input$species))$RedList, ")"
+          )
+    })
+  
+  
+  # about page
   output$sMon1 <- renderText({
     if (input$language == "EN") {
       "sMon project"
