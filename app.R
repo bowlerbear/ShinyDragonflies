@@ -213,6 +213,14 @@ server <- function(input, output) {
          height = 460)
   }, deleteFile = FALSE)
   
+  output$data_map <- renderImage({
+    filename <- normalizePath(file.path(data_maps_dir, paste0("Data_", input$year, "_", input$species, '.png')))
+    list(src = filename,
+         width = 421.6659,
+         height = 460)
+  }, deleteFile = FALSE)
+  
+  
   
   # trends info
   output$trend <- renderText({

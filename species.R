@@ -6,8 +6,10 @@ library(tidyverse)
 img_dir <- "images"
 
 ts_plots_dir <- "data/ts_plots"
+
 estimate_maps_dir <- "data/spatial_maps/estimate"
 error_maps_dir <- "data/spatial_maps/error"
+data_maps_dir <- "data/spatial_maps/data"
 
 
 # parse species names from time series plots
