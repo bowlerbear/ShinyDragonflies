@@ -18,9 +18,10 @@ species_names <- gsub("_ts.png", "", list.files(ts_plots_dir))
 
 # trend classification
 Datafile_1_Traits_and_trends <- readr::read_csv("data/Datafile_1_Traits_and_trends.csv")
-Datafile_1_Traits_and_trends$trend_classification <- ifelse(
-  Datafile_1_Traits_and_trends$Trend < 0, "Decreasing", "Increasing"
-  )
+#Datafile_1_Traits_and_trends$trend_classification <- ifelse(
+#  Datafile_1_Traits_and_trends$Trend < 0, "Decreasing", "Increasing"
+#  )
+Datafile_1_Traits_and_trends$trend_classification <- Datafile_1_Traits_and_trends$Trend_classification
 
 
 Datafile_1_Traits_and_trends <- Datafile_1_Traits_and_trends %>% 
